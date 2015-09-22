@@ -19,7 +19,6 @@ what color is birch?
 import time
 import json
 from neo4jrestclient.client import GraphDatabase
-from nltk.stem.wordnet import WordNetLemmatizer
 
 gdb = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="123")
 
@@ -64,7 +63,6 @@ def check_class_relations(dependencies):
 
 def save_dependencies(dependencies):
 	for dep in dependencies:
-		# @TODO Store normal form?
 		obj = dep[2]
 		depon = dep[1]
 		type = dep[0]
@@ -125,7 +123,26 @@ def find_implicit_relations():
 		print node_hash[tpl[0]] + " is " + node_hash[tpl[1]]
 
 
+def prepare_words_for_db(sentence):
+	def process(w):
+		w = w.replace("-", "_")
+		w = w.replace("/", "_")
+		return w
 		
+
+	for i, word in enumerate(sentence["dependencies"]):
+		sentence["dependencies"][i][1] = process(sentence["dependencies"][i][1])
+		sentence["dependencies"][i][2] = process(sentence["dependencies"][i][2])
+
+	for i, word in enumerate(sentence["words"]):
+		sentence["words"][i][0] = process(sentence["words"][i][0])
+		sentence["words"][i][1]['Lemma'] = process(sentence["words"][i][1]['Lemma'])
+
+	return sentence
+	
+		
+
+
 
 context =  raw_input("Context (common): ")
 if (context == ""):
@@ -145,7 +162,7 @@ if (context == "ignore"):
 else:
 	# !! Performs only for one sentence
 	# save phrase dependencies to db
-	sentence = result["sentences"][0]
+	sentence = prepare_words_for_db(result["sentences"][0])
 	# save dependencies
 	save_dependencies(sentence["dependencies"])
 	# check class relations

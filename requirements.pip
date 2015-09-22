@@ -1,0 +1,7 @@
+Unidecode==0.04.18
+argparse==1.2.1
+neo4jrestclient==2.1.0
+pexpect==3.3
+requests==2.7.0
+simplejson==3.8.0
+wsgiref==0.1.2
