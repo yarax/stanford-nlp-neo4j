@@ -58,3 +58,23 @@ def save_dependencies(dependencies, context):
 		#q = "MATCH (a:{0}), (b:{1}) MERGE a-[rel:{2}]->b".format(root, context, RELATION_TYPES["class"])
 		#print q
 		#gdb.query(q = q)
+
+
+def prepare_words_for_db(sentence):
+	def process(w):
+		w = w.replace("-", "_")
+		w = w.replace("/", "_")
+		return w
+		
+
+	for i, word in enumerate(sentence["dependencies"]):
+		sentence["dependencies"][i][1] = process(sentence["dependencies"][i][1])
+		sentence["dependencies"][i][2] = process(sentence["dependencies"][i][2])
+
+	for i, word in enumerate(sentence["words"]):
+		sentence["words"][i][0] = process(sentence["words"][i][0])
+		sentence["words"][i][1]['Lemma'] = process(sentence["words"][i][1]['Lemma'])
+
+	return sentence
+
+

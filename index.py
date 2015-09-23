@@ -43,7 +43,7 @@ if text != "":
 	else:
 		# !! Performs only for one sentence
 		# save phrase dependencies to db
-		sentence = result["sentences"][0]
+		sentence = nlp.prepare_words_for_db(result["sentences"][0])
 		# save dependencies
 		nlp.save_dependencies(sentence["dependencies"], context)
 		# check class relations
