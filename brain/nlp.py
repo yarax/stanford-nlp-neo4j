@@ -3,7 +3,8 @@ from neo4jrestclient.client import GraphDatabase
 from nltk.stem.wordnet import WordNetLemmatizer
 
 RELATION_TYPES = {
-	"class" : "class"
+	"class" : "class",
+	"prop" : "prop"
 }
 
 gdb = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="123")
@@ -14,6 +15,11 @@ def check_lemma_relations(origin, lemma, pos):
 		q = "MATCH (a:{0}), (b:{1}) MERGE a-[rel:class]->b".format(lemma, origin)
 		gdb.query(q = q)
 
+
+def get_part_of_speach(word, words):
+	for item in words:
+		if item[0] == word:
+			return item[1]["PartOfSpeech"]
 
 def check_lemmas(words):
 	for i, word in enumerate(words):
@@ -30,10 +36,14 @@ def check_lemmas(words):
 			check_lemma_relations(origin, lemma, pos)
 
 
-def check_class_relations(dependencies):
+def check_class_relations(dependencies, words):
 	for dep in dependencies:
 		if (dep[0] == "nsubj"):
-			q = "MATCH (a:{0}), (b:{1}) MERGE a-[rel:{2}]->b".format(dep[2], dep[1], RELATION_TYPES["class"])
+			pos = get_part_of_speach(dep[1], words)
+			rel = RELATION_TYPES["class"]
+			if pos == "JJ":
+				rel = RELATION_TYPES["prop"]
+			q = "MATCH (a:{0}), (b:{1}) MERGE a-[rel:{2}]->b".format(dep[2], dep[1], rel)
 			gdb.query(q = q)
 
 

@@ -31,7 +31,13 @@ if (context == ""):
 	context = "common"
 
 text = ""
+
+
+######
 text =  raw_input("Phrase: ")
+######
+
+
 if text != "":
 	phrase_type = "q" if text[len(text)-1] == "?" else "a"
 
@@ -39,7 +45,6 @@ if text != "":
 
 	if (context == "ignore"):
 		print json.dumps(result)
-		find_implicit_relations()
 	else:
 		# !! Performs only for one sentence
 		# save phrase dependencies to db
@@ -47,7 +52,7 @@ if text != "":
 		# save dependencies
 		nlp.save_dependencies(sentence["dependencies"], context)
 		# check class relations
-		nlp.check_class_relations(sentence["dependencies"])
+		nlp.check_class_relations(sentence["dependencies"], sentence["words"])
 		nlp.check_lemmas(sentence["words"])
 
 		analyze.find_implicit_relations()
